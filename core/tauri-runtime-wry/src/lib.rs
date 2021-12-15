@@ -1049,6 +1049,7 @@ pub enum Message {
     Sender<Result<Weak<Window>>>,
   ),
   CreateGLWindow(
+    String,
     Box<dyn epi::App + Send>,
     epi::NativeOptions,
     EventLoopProxy<Message>,
@@ -1540,13 +1541,14 @@ impl WryHandle {
   /// Creates a new egui window.
   pub fn create_egui_window(
     &self,
+    label: String,
     app: Box<dyn epi::App + Send>,
     native_options: epi::NativeOptions,
   ) -> Result<()> {
     let proxy = self.context.proxy.clone();
     send_user_message(
       &self.context,
-      Message::CreateGLWindow(app, native_options, proxy),
+      Message::CreateGLWindow(label, app, native_options, proxy),
     )?;
     Ok(())
   }
@@ -2220,7 +2222,7 @@ fn handle_user_message(
         sender.send(Err(Error::CreateWindow)).unwrap();
       }
     }
-    Message::CreateGLWindow(app, native_options, proxy) => {
+    Message::CreateGLWindow(label, app, native_options, proxy) => {
       let mut egui_id = EGUI_ID.lock().unwrap();
       if let Some(id) = *egui_id {
         if let WindowHandle::GLWindow(gl_window, gl, painter, integration, ..) =
@@ -2302,7 +2304,7 @@ fn handle_user_message(
           windows.lock().expect("poisoned webview collection").insert(
             window_id,
             WindowWrapper {
-              label: "egui_window".to_string(),
+              label,
               inner: WindowHandle::GLWindow(gl_window, gl, painter, integration),
               menu_items: Default::default(),
             },
@@ -2366,7 +2368,7 @@ fn handle_user_message(
           windows.lock().expect("poisoned webview collection").insert(
             window_id,
             WindowWrapper {
-              label: "egui_window".to_string(),
+              label,
               inner: WindowHandle::GLWindow(gl_window, gl, painter, integration, render_flow),
               menu_items: Default::default(),
             },

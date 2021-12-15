@@ -215,10 +215,11 @@ impl AppHandle<crate::Wry> {
   /// creating egui's window widget.
   pub fn create_egui_window(
     &self,
+    label: String,
     app: Box<dyn epi::App + Send>,
     native_options: epi::NativeOptions,
   ) -> crate::Result<()> {
-    self.runtime_handle.create_egui_window(app, native_options).map_err(Into::into)
+    self.runtime_handle.create_egui_window(label, app, native_options).map_err(Into::into)
   }
 
   /// Sends a window message to the event loop.
