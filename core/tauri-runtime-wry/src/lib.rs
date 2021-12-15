@@ -2348,7 +2348,7 @@ fn handle_user_message(
 
                     {
                         let control_flow = if integration.should_quit() {
-                            2
+                            1
                         } else if needs_repaint {
                             0
                         } else {
