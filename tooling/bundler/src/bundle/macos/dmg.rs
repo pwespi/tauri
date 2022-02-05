@@ -88,9 +88,9 @@ pub fn bundle_project(settings: &Settings, bundles: &[Bundle]) -> crate::Result<
 
   let mut args = vec![
     "--volname",
-    &product_name,
+    product_name,
     "--icon",
-    &product_name,
+    product_name,
     "180",
     "170",
     "--app-drop-link",
@@ -104,7 +104,7 @@ pub fn bundle_project(settings: &Settings, bundles: &[Bundle]) -> crate::Result<
   ];
 
   let icns_icon_path =
-    create_icns_file(&output_path, &settings)?.map(|path| path.to_string_lossy().to_string());
+    create_icns_file(&output_path, settings)?.map(|path| path.to_string_lossy().to_string());
   if let Some(icon) = &icns_icon_path {
     args.push("--volicon");
     args.push(icon);
@@ -137,7 +137,7 @@ pub fn bundle_project(settings: &Settings, bundles: &[Bundle]) -> crate::Result<
     .args(vec![dmg_name.as_str(), bundle_file_name.as_str()]);
 
   common::print_info("running bundle_dmg.sh")?;
-  common::execute_with_verbosity(&mut cmd, &settings).map_err(|_| {
+  common::execute_with_verbosity(&mut cmd, settings).map_err(|_| {
     crate::Error::ShellScriptError(format!(
       "error running bundle_dmg.sh{}",
       if settings.is_verbose() {
@@ -152,7 +152,7 @@ pub fn bundle_project(settings: &Settings, bundles: &[Bundle]) -> crate::Result<
 
   // Sign DMG if needed
   if let Some(identity) = &settings.macos().signing_identity {
-    super::sign::sign(dmg_path.clone(), identity, &settings, false)?;
+    super::sign::sign(dmg_path.clone(), identity, settings, false)?;
   }
   Ok(vec![dmg_path])
 }

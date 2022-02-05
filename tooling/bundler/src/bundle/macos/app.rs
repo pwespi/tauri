@@ -91,14 +91,14 @@ pub fn bundle_project(settings: &Settings) -> crate::Result<Vec<PathBuf>> {
     // for CI build
     setup_keychain_if_needed()?;
     // sign application
-    sign(app_bundle_path.clone(), identity, &settings, true)?;
+    sign(app_bundle_path.clone(), identity, settings, true)?;
     // notarization is required for distribution
     match notarize_auth_args() {
       Ok(args) => {
         notarize(app_bundle_path.clone(), args, settings)?;
       }
       Err(e) => {
-        common::print_info(format!("skipping app notarization, {}", e.to_string()).as_str())?;
+        common::print_info(format!("skipping app notarization, {}", e).as_str())?;
       }
     }
   }
